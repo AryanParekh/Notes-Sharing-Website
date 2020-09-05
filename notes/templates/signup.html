@@ -1,0 +1,98 @@
+{% extends 'navigation.html' %}
+{% load static %}
+{% block body %}
+
+{% ifequal error "no" %}
+<script>
+  alert("Signed In Successfully! :)");
+  window.location=('{% url 'profile' %}')
+</script>
+{% endifequal %}
+
+{% ifequal error "yes" %}
+<script>
+  alert("Something went wrong, please try again :(");
+</script>
+{% endifequal %}
+
+<section id="signup">
+  <div class="bg-light">
+    <br><br>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6">
+          <h2 class="text-center">ARE YOU AN EXISTING USER?</h2>
+          <hr>
+          <center>
+          <p class="text-danger" style="font-size:14px;">(Note: You can't access notes if you don't have an account on this website)</p>
+          <br><br>
+          <a href="{% url 'userlogin' %}" class='signup-btn' type="submit" name="submit" >LOG INTO THE ACCOUNT</a>
+          </center>
+        </div>
+
+        <div class="col-sm-6">
+          <h2>REGISTER HERE</h2>
+          <hr>
+          <p class="text-warning" style="font-size:14px;">If you don't have an account,please register</p>
+          <div class="form-container">
+            <br>
+            <div class="form-box">
+              <form method="post" onsubmit="return number_validator()">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label for="first-name">First Name</label><br>
+                  <input id="first-name" type="text" placeholder="Enter Firstname" name="firstname"><br>
+                </div>
+
+                <div class="form-group">
+                  <label for="last-name">Last Name</label><br>
+                  <input id="last-name" type="text" placeholder="Enter Lastname" name="lastname" ><br>
+                </div>
+
+                <div class="form-group">
+                  <label for="email">Email ID</label><br>
+                  <input id='email' type="text" placeholder="Enter email" name="emailid"><br>
+                </div>
+
+                <div class="form-group">
+                  <label for="password">Password</label><br>
+                  <input id="password" type="password" placeholder="Enter password" name="password" ><br>
+                </div>
+
+                <div class="form-group">
+                  <label for="mobile">Mobile Number</label><br>
+                  <input id='mobile' type="text" placeholder="Enter Mobile Number" name="contact">
+                  <span id='alert' style='color:red;'></span><br>
+                </div>
+
+                <div class="form-group">
+                  <label for="branch">Branch</label><br>
+                  <select class="form-control" name="branch">
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Electrical">Electrical</option>
+                    <option value="Electronics">Electronics</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="role">Create account as a?</label>
+                    <select class="form-control" name="role">
+                      <option value="Student">Student</option>
+                      <option value="Teacher">Teacher</option>
+                    </select>
+                    <br>
+                </div>
+
+                <button class='text-center signup-btn' type="submit" name="submit">SIGN UP</button>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+{% endblock %}

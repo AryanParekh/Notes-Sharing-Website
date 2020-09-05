@@ -1,0 +1,50 @@
+{% extends 'adminnavigation.html' %}
+{% load static %}
+{% block admin_body %}
+<!-- header area start-->
+<header id='adminhead'>
+  <div class="showcase-content">
+    <div class="container">
+      <br><br><br><br><br><br><br><br><br><br>
+      <h1>Hey Admin! <br><span class="text-primary">Let's get started</span></h1>
+    </div>
+  </div>
+</header>
+<!-- header area end -->
+<!-- displaying types of notes started -->
+<section id="adminhome" class="bg-medium">
+  <br>
+  <div class="container mt-5">
+    <div class="row">
+
+      <div class="col-sm-3 text-center box-effect">
+        <div class="box">
+          <h2 class="text-primary">{{p}}</h2>
+          <a href="{% url 'admin_viewpendingnotes' %}"><h4 class="text-dark">Pending Notes</h4></a>
+        </div>
+      </div>
+      <div class="col-sm-3 text-center box-effect">
+        <div class="box">
+          <h2 class="text-primary">{{a}}</h2>
+          <a href="{% url 'admin_viewacceptednotes' %}"><h4 class="text-dark">Accepted Notes</h4></a>
+        </div>
+      </div>
+      <div class="col-sm-3 text-center box-effect">
+        <div class="box">
+          <h2 class="text-primary">{{r}}</h2>
+          <a href="{% url 'admin_viewrejectednotes' %}"><h4 class="text-dark">Rejected Notes</h4></a>
+        </div>
+      </div>
+      <div class="col-sm-3 text-center box-effect">
+        <div class="box">
+          <h2 class="text-primary">{{t}}</h2>
+          <a href="{% url 'admin_viewallnotes' %}"><h4 class="text-dark">All Notes</h4></a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <br><br><br>
+</section>
+<!-- displaying types of notes end -->
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'usernavigation.html' %}
+{% load static %}
+{% block user_body %}
+
+<section id="signup">
+  <div class="bg-light">
+    <br><br>
+    <div class="container">
+      <h2 class="text-center">ALL NOTES</h2>
+      <hr>
+      <table class="table table-bordered" id=mytable>
+        <thead>
+          <tr>
+            <th>Sr. No</th>
+            <th>Uploading date</th>
+            <th>Branch</th>
+            <th>Subject</th>
+            <th>Download Notes</th>
+            <th>File type</th>
+            <th>Description</th>
+          </tr>
+          {% for i in notes %}
+          {% ifequal i.status 'accepted' %}
+          <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{i.uploadingdate}}</td>
+            <td>{{i.branch}}</td>
+            <td>{{i.subject}}</td>
+            <td><a href="{{i.notesfile.url}}" download>Download</a></td>
+            <td>{{i.filetype}}</td>
+            <td>{{i.description}}</td>
+          </tr>
+          {% endifequal %}
+          {% endfor %}
+        </thead>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

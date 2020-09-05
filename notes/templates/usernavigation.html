@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Notes Sharing Website</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="{% static 'css/full.css' %}">
+
+  </head>
+  <body>
+    <!-- navbar start -->
+    <nav id='navbar'>
+        <h2><a href="#"><span class="text-primary">Notes</span> Sharing</a></h2>
+      <ul>
+
+        <li><a href="{% url 'profile' %}">Home</a></li>
+        {% ifequal data.role 'Student' %}
+        <li class="nav-item dropdown">
+          <a class="dropdown-toggle" href="#" data-toggle="dropdown">Assignments</a>
+          <div class="dropdown-menu bg-medium">
+            <a class="dropdown-item" href="#">Upload Assignments</a>
+            <a class="dropdown-item" href="#">View My Assignments</a>
+          </div>
+        </li>
+        {% endifequal %}
+        {% ifequal data.role 'Teacher' %}
+        <li class="nav-item dropdown">
+          <a class="dropdown-toggle" href="#" data-toggle="dropdown">Assignments</a>
+          <div class="dropdown-menu bg-medium">
+            <a class="dropdown-item" href="#">Unchecked Assignments</a>
+            <a class="dropdown-item" href="#">Checked Assignments</a>
+          </div>
+        </li>
+        {% endifequal %}
+        <li class="nav-item dropdown">
+          <a class="dropdown-toggle" href="#" data-toggle="dropdown">Notes</a>
+          <div class="dropdown-menu bg-medium">
+            <a class="dropdown-item" href="{% url 'uploadnotes' %}">Upload Notes</a>
+            <a class="dropdown-item" href="{% url 'viewmynotes' %}">View My Notes</a>
+            <a class="dropdown-item" href="{% url 'user_viewallnotes' %}">View All Notes</a>
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="dropdown-toggle" href="#" data-toggle="dropdown">Welcome {{request.user.first_name}}</a>
+          <div class="dropdown-menu bg-medium">
+            <a class="dropdown-item" href="{% url 'profile' %}">View Profile</a>
+            <a class="dropdown-item" href="#">Edit Profile</a>
+            <a class="dropdown-item" href="{% url 'changepassword' %}">Change Password</a>
+            <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+          </div>
+        </li>
+
+      </ul>
+    </nav>
+    <!-- navbar end -->
+    {% block user_body %}
+    {% endblock %}
+    <!-- footer start -->
+    <footer class="bg-dark">
+      <p><span class="text-primary">Name: </span>Aryan Parekh</p>
+      <p><span class="text-primary">Email-ID: </span>aryanparekh2412@gmail.com</p>
+      <p><span class="text-primary">Phone No.: </span>+91 7021298925</p>
+    </footer>
+    <!-- footer end  -->
+  </body>
+</html>

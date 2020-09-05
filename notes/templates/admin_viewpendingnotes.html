@@ -1,0 +1,44 @@
+{% extends 'adminnavigation.html' %}
+{% load static %}
+{% block admin_body %}
+
+<section id="signup">
+  <div class="bg-light">
+    <br><br>
+    <div class="container">
+      <h2 class="text-center">PENDING NOTES</h2>
+      <hr>
+      <table class="table table-bordered" id=mytable>
+        <thead>
+          <tr>
+            <th>Sr. No</th>
+            <th>Uploading date</th>
+            <th>Branch</th>
+            <th>Subject</th>
+            <th>Download Notes</th>
+            <th>File type</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+          {% for i in notes %}
+          {% ifequal i.status 'pending' %}
+          <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{i.uploadingdate}}</td>
+            <td>{{i.branch}}</td>
+            <td>{{i.subject}}</td>
+            <td><a href="{{i.notesfile.url}}" download>Download</a></td>
+            <td>{{i.filetype}}</td>
+            <td>{{i.description}}</td>
+            <td>{{i.status}}</td>
+            <td><a href="{% url 'acceptnotes' i.id %}"><i class="fa fa-check" ></i></a> <a href="{% url 'rejectnotes' i.id %}"><i class="fa fa-times" ></i></a></td>
+          </tr>
+          {% endifequal %}
+          {% endfor %}
+        </thead>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
