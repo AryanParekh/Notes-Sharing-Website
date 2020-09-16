@@ -32,7 +32,10 @@
             <td>{{i.filetype}}</td>
             <td>{{i.description}}</td>
             <td>{{i.status}}</td>
-            <td><a href="{% url 'acceptnotes' i.id %}"><i class="fa fa-check" ></i></a> <a href="{% url 'rejectnotes' i.id %}"><i class="fa fa-times" ></i></a></td>
+            <td>
+              <a href="{% url 'acceptnotes' i.id %}" style="color:green;font-size:20px;"><i class="fa fa-check" ></i></a>
+              <a href="{% url 'rejectnotes' i.id %}" style="color:red;font-size:20px;"><i class="fa fa-times" ></i></a>
+            </td>
           </tr>
           {% endifequal %}
           {% endfor %}
