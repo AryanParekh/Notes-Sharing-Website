@@ -51,7 +51,6 @@
           <a class="dropdown-toggle" href="#" data-toggle="dropdown">Welcome {{request.user.first_name}}</a>
           <div class="dropdown-menu bg-medium">
             <a class="dropdown-item" href="{% url 'profile' %}">View Profile</a>
-            <a class="dropdown-item" href="#">Edit Profile</a>
             <a class="dropdown-item" href="{% url 'changepassword' %}">Change Password</a>
             <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
           </div>

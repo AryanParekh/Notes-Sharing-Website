@@ -46,17 +46,27 @@ def adminlogin(request):
 def signup1(request):
     error=""
     if request.method=='POST':
-        f=request.POST.get('firstname')
-        l=request.POST.get('lastname')
-        e=request.POST.get('emailid')
-        p=request.POST.get('password')
-        c=request.POST.get('contact')
-        b=request.POST.get('branch')
-        r=request.POST.get('role')
+        firstname=request.POST.get('firstname')
+        lastname=request.POST.get('lastname')
+        emailid=request.POST.get('emailid')
+        password=request.POST.get('password')
+        contact=request.POST.get('contact')
+        branch=request.POST.get('branch')
+        role=request.POST.get('role')
         try:
-            user= User.objects.create_user(username=e,password=p,first_name=f,last_name=l)
+            user= User.objects.create_user(
+                username=emailid,
+                password=password,
+                first_name=firstname,
+                last_name=last_name
+            )
             user.save()
-            user_additional_data=Signup.objects.create(user=user,contact=c,branch=b,role=r)
+            user_additional_data=Signup.objects.create(
+                user=user,
+                contact=contact,
+                branch=branch,
+                role=role
+            )
             user_additional_data.save()
             error="no"
         except:
@@ -68,17 +78,17 @@ def adminhome(request):
     if not request.user.is_staff:
         return redirect('adminlogin')
     notes=Notes.objects.all()
-    p=0
-    a=0
-    r=0
+    pending=0
+    accepted=0
+    rejected=0
     for i in notes:
         if i.status=='pending':
-            p=p+1
+            pending=pending+1
         elif i.status=='accepted':
-            a=a+1
+            accepted=accepted+1
         elif i.status=='rejected':
-            r=r+1
-    d={'a':a,'p':p,'r':r,'t':a+p+r}
+            rejected=rejected+1
+    d={'a':accepted,'p':pending,'r':rejected,'t':accepted+pending+rejected}
     return render(request,'adminhome.html',d)
 
 def Logout(request):
