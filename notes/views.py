@@ -58,7 +58,7 @@ def signup1(request):
                 username=emailid,
                 password=password,
                 first_name=firstname,
-                last_name=last_name
+                last_name=lastname
             )
             user.save()
             user_additional_data=Signup.objects.create(
