@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Signup(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.OneToOneField(User,on_delete=models.CASCADE)
     contact = models.CharField(max_length=10)
     BRANCH_CHOICE=[('Computer Science','Computer Science'),('Mechanical','Mechanical'),('Electrical','Electrical'),('Electronics','Electronics')]
     branch = models.CharField(max_length=30,choices=BRANCH_CHOICE,default='Computer Science')
