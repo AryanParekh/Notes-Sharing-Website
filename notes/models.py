@@ -10,10 +10,10 @@ class Signup(models.Model):
     role = models.CharField(max_length=15,choices=[('Student','Student'),('Teacher','Teacher')],default='Student')
 
     def __str__(self):
-        return self.user.username
+        return self.role+" "+self.user.username
 
 class Notes(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    user = models.ForeignKey(Signup,on_delete=models.CASCADE)
     uploadingdate = models.DateField()
     BRANCH_CHOICE=[('Computer Science','Computer Science'),('Mechanical','Mechanical'),('Electrical','Electrical'),('Electronics','Electronics')]
     branch = models.CharField(max_length=30,choices=BRANCH_CHOICE,default='Computer Science')
@@ -24,7 +24,7 @@ class Notes(models.Model):
     status = models.CharField(max_length=15,choices=[('accepted','accepted'),('rejected','rejected'),('pending','pending')],default='pending')
 
     def __str__(self):
-        return self.user.username+" "+self.status
+        return self.user.user.username+"-"+self.subject+"-"+self.status
 
 class Assignments(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)

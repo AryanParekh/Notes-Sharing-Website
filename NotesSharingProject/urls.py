@@ -42,4 +42,11 @@ urlpatterns = [
     path('admin_viewacceptednotes/',admin_viewacceptednotes,name="admin_viewacceptednotes"),
     path('admin_viewrejectednotes/',admin_viewrejectednotes,name="admin_viewrejectednotes"),
     path('admin_viewpendingnotes/',admin_viewpendingnotes,name="admin_viewpendingnotes"),
+    # api views
+    path('api_users/',User_list,name="api_users"),
+    path('api_user_detail/<int:pk>/',User_detail,name="api_user_detail"),
+    path('api_notes/',Notes_list.as_view(),name="api_notes"),
+    path('api_note_detail/<int:id>/',Notes_detail.as_view(),name="api_notes"),
+    path('api_login/',Login1.as_view(),name="api_login"),
+    path('api_verified_notes/',Verified_Notes_list.as_view(),name="api_verified_notes")
 ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

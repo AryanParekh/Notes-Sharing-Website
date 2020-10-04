@@ -4,6 +4,19 @@ from .models import *
 from django.contrib.auth import authenticate,logout,login
 from datetime import date
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse,JsonResponse
+from rest_framework.parsers import JSONParser
+from .serializers import *
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status,generics,mixins
+from rest_framework.views import APIView
+from rest_framework.authentication import SessionAuthentication,BasicAuthentication,TokenAuthentication
+from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated,IsAdminUser,AllowAny
+from rest_framework.decorators import authentication_classes,permission_classes
+
 
 # Create your views here.
 def home(request):
@@ -137,7 +150,7 @@ def uploadnotes(request):
         n=request.FILES.get('notesfile')
         f=request.POST.get('filetype')
         d=request.POST.get('description')
-        u= User.objects.filter(username=request.user.username).first()
+        u=Signup.objects.filter(user=request.user).first()
         try:
             user= Notes.objects.create(user=u,uploadingdate=date.today(),branch=b,subject=s,notesfile=n,filetype=f,description=d,status='pending')
             user.save()
@@ -150,7 +163,7 @@ def uploadnotes(request):
 def viewmynotes(request):
     if not request.user.is_authenticated:
         return redirect('userlogin')
-    user = User.objects.get(id=request.user.id)
+    user=Signup.objects.filter(user=request.user).first()
     notes = Notes.objects.filter(user=user)
     d={'notes':notes}
     return render(request,'viewmynotes.html',d)
@@ -226,3 +239,178 @@ def admin_viewpendingnotes(request):
     notes=Notes.objects.all()
     d={'notes':notes}
     return render(request,'admin_viewpendingnotes.html',d)
+
+
+# SERIALIZER views
+
+@api_view(['GET','POST'])
+# @authentication_classes([SessionAuthentication, BasicAuthentication])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAdminUser])
+def User_list(request):
+    if request.method=="GET":
+        users=User.objects.all()
+        serializer=UserSerializer(users,many=True)
+        data=[]
+        for a in serializer.data:
+            d={}
+            d.update({'id':a['id']})
+            d.update({'username':a['username']})
+            d.update({'first_name':a['first_name']})
+            d.update({'last_name':a['last_name']})
+            data.append(d)
+        return Response(data)
+
+    elif request.method=="POST":
+        serializer=UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user=serializer.newsave()
+            token=Token.objects.create(user=user)
+            data={
+                'id':user.id,
+                'username':user.username,
+                'first_name':user.first_name,
+                'last_name':user.last_name,
+                'password':user.password,
+                'token':token.key
+            }
+            return Response(data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET','DELETE'])
+# @authentication_classes([SessionAuthentication, BasicAuthentication])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAdminUser])
+def User_detail(request,pk):
+    try:
+        user=User.objects.get(pk=pk)
+        user_signup=Signup.objects.filter(user=user).first()
+        token,_=Token.objects.get_or_create(user=user)
+
+    except User.DoesNotExist:
+        return HttpResponse(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method=="GET":
+        serializer=UserSerializer(user)
+        data={}
+        if user_signup!=None:
+            u=serializer.data
+            data={
+                'id':u['id'],
+                'username':u['username'],
+                'first_name':u['first_name'],
+                'last_name':u['last_name'],
+                'password':u['password'],
+                'contact':user_signup.contact,
+                'branch':user_signup.branch,
+                'role':user_signup.role,
+                'token':token.key
+            }
+        else:
+            data=serializer.data
+        return Response(data)
+
+    elif request.method=="DELETE":
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+# class Notes_list(APIView):
+#     def get(self,request):
+#         notes=Notes.objects.all()
+#         serializer=NotesSerializer(notes,many=True)
+#         return Response(serializer.data)
+#
+#     def post(self,request):
+#         serializer=NotesSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data,status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
+class Notes_list(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateModelMixin):
+    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAdminUser]
+    serializer_class= NotesSerializer
+    queryset=Notes.objects.all()
+
+    def get(self,request):
+        return self.list(request)
+
+    def post(self,request):
+        return self.create(request)
+
+class Notes_detail(generics.GenericAPIView,mixins.UpdateModelMixin,mixins.RetrieveModelMixin,mixins.DestroyModelMixin):
+    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAdminUser]
+    serializer_class= NotesSerializer
+    queryset=Notes.objects.all()
+    lookup_field='id'
+
+    def get(self,request,id):
+        return self.retrieve(request)
+
+    def put(self,request,id):
+        return self.update(request,id)
+
+    def delete(self,request,id):
+        return self.destroy(request,id)
+
+class Login1(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class=LoginSerializer
+
+    def post(self,request,*args,**kwargs):
+        username = request.data.get("username")
+        password = request.data.get("password")
+        user = authenticate(username=username,password=password)
+        if user is not None:
+            token =Token.objects.get(user=user)
+            user_signup=Signup.objects.filter(user=user).first()
+            notes=Notes.objects.filter(user=user_signup)
+            notes_data=[]
+            if (notes!=None):
+                for note in notes:
+                    d={
+                        'id':note.id,
+                        'user':note.user.user.username,
+                        'uploadingdate':note.uploadingdate,
+                        'branch':note.branch,
+                        'subject':note.subject,
+                        'notesfile':note.notesfile.url,
+                        'filetype':note.filetype,
+                        'description':note.description,
+                        'status':note.status,
+                    }
+                    notes_data.append(d)
+            login(request, user)
+            data={
+                'id':user.id,
+                'username':user.username,
+                'first_name':user.first_name,
+                'last_name':user.last_name,
+                'password':user.password,
+                'contact':"" if user_signup==None else user_signup.contact,
+                'branch':"" if user_signup==None else user_signup.branch,
+                'role':"" if user_signup==None else user_signup.role,
+                'notes':notes_data,
+                'token':token.key
+            }
+            return Response(data)
+        else:
+            data = {"Message": "There was error authenticating"}
+            return JsonResponse(data)
+
+class Verified_Notes_list(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateModelMixin):
+    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class= NotesSerializer
+    queryset=Notes.objects.filter(status='accepted')
+
+    def get(self,request):
+        return self.list(request)
+
+    def post(self,request):
+        return self.create(request)
