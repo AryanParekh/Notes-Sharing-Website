@@ -411,6 +411,3 @@ class Verified_Notes_list(generics.GenericAPIView,mixins.ListModelMixin,mixins.C
 
     def get(self,request):
         return self.list(request)
-
-    def post(self,request):
-        return self.create(request)
